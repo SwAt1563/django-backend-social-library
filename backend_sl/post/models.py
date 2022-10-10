@@ -1,0 +1,54 @@
+from django.db import models
+from autoslug import AutoSlugField
+from django.urls import reverse
+from django.conf import settings
+from django.core.validators import ValidationError
+# Create your models here.
+def validate_file_extension(value):
+    import os
+    from django.core.exceptions import ValidationError
+    ext = os.path.splitext(value.name)[1]  # [0] returns path+filename
+    valid_extensions = ('.pdf', '.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif')
+    if not ext.lower() in valid_extensions:
+        raise ValidationError('Unsupported file extension.')
+
+class Post(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.CharField(max_length=500)
+    file = models.FileField(upload_to='posts_files/', validators=(validate_file_extension,))
+    slug = AutoSlugField(unique=True, always_update=True, populate_from='title')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='posts')
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_path(self):
+        return reverse('post:post_detail', args=[self.slug])
+
+
+class Comment(models.Model):
+    comment = models.CharField(max_length=200)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='comments')
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.user} comment on {self.post.title} with this comment: {self.comment}'
+
+
+
+
+class Star(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='stars')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='stars')
+
+    def __str__(self):
+        return f'user: {self.user} make star on post: {self.post.title}'
+
+    # for don't let user make more than one star on the same post
+    def clean(self):
+        if Star.objects.filter(post=self.post, user=self.user):
+            raise ValidationError('this user make star on this post')
+        return self
+

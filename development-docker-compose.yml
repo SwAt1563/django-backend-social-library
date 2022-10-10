@@ -1,0 +1,61 @@
+version: '3.5'
+
+
+
+networks:
+  backend_net:
+    driver: bridge
+
+
+services:
+  backend_sl:
+    container_name: backend_sl
+    build:
+      context: ./backend_sl # but the source path that we will search about docker image from it
+      dockerfile: development.Dockerfile
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - DJANGO_SETTINGS_MODULE=backend_sl.settings.development
+      - DEBUG=True
+    ports:
+      - "6123:6123"
+    volumes:
+      - static_vol:/app/static # /app: workdir that we created in docker image and move our files in it
+      - media_vol:/app/static
+    networks:
+      - backend_net
+
+  redis:
+    container_name: redis-server-api
+    image: redis:alpine
+    restart: always
+    ports:
+      - '6380:6380'
+    networks:
+      - backend_net
+
+  celery:
+    container_name: celery-api
+    restart: always
+    build:
+      context: ./backend_sl
+      dockerfile: development.Dockerfile
+    command: celery -A backend_sl worker -l info
+    volumes:
+      - celery:/app
+    env_file:
+      - .env
+    environment:
+      - DJANGO_SETTINGS_MODULE=backend_sl.settings.development
+    depends_on:
+      - redis
+      - backend_sl
+    networks:
+      - backend_net
+
+volumes:
+  static_vol:
+  media_vol:
+  celery:

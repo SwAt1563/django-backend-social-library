@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
+from django.db.models import Count
 # Create your models here.
 
 def validate_email(email):
@@ -15,6 +16,8 @@ class UserAccount(AbstractUser):
     created = models.DateTimeField(auto_now_add=True)
     is_admin = models.BooleanField(default=False)
 
+
+
     # this used by profile slug
     def __str__(self):
         return self.username
@@ -24,5 +27,11 @@ class UserAccount(AbstractUser):
         if hasattr(self, 'profile'):
             self.profile.save()
         super().save(*args, **kwargs)
+
+    @property
+    def get_total_user_stars(self):
+        if hasattr(self, 'posts'):
+            return self.posts.aggregate(total=Count('stars'))['total']
+        return 0
 
 

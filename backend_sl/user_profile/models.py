@@ -13,7 +13,7 @@ class Profile(models.Model):
     # black: can form be empty
     # charfield and textfield can't be null just empty string
     phone = models.CharField(blank=True, max_length=20)
-    age = models.PositiveIntegerField(null=True, blank=True)
+    age = models.PositiveIntegerField(null=True, blank=True, default=0)
     address = models.CharField(max_length=200,  blank=True)
     status = models.CharField(max_length=200,  blank=True)
     about_me = models.CharField(max_length=500, blank=True)

@@ -36,8 +36,9 @@ class UsernameTokenObtainSerializer(TokenObtainPairSerializer):
         data["access"] = str(refresh.access_token)
         data['username'] = str(self.user.username)
         data['email'] = str(self.user.email)
+        data['user_id'] = self.user.id
         if hasattr(self.user, 'profile'):
-            data['user_slug'] = str(self.user.profile.slug)
+            data['profile_slug'] = str(self.user.profile.slug)
 
         return data
 
@@ -67,8 +68,9 @@ class EmailTokenObtainSerializer(TokenObtainPairSerializer):
         data["access"] = str(refresh.access_token)
         data['username'] = str(self.user.username)
         data['email'] = str(self.user.email)
+        data['user_id'] = self.user.id
         if hasattr(self.user, 'profile'):
-            data['user_slug'] = str(self.user.profile.slug)
+            data['profile_slug'] = str(self.user.profile.slug)
 
         return data
 

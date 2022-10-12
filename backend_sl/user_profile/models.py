@@ -24,3 +24,5 @@ class Profile(models.Model):
 
     def get_absolute_path(self):
         return reverse('user_profile:profile', args=[self.slug])
+
+

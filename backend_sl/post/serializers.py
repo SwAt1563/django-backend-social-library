@@ -2,6 +2,10 @@ from rest_framework import serializers
 from .models import Post, Comment, Star
 from account.models import UserAccount
 
+class StarSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Star
+        fields = '__all__'
 
 # you should send post_slug and user_id of the user who want to make star or that post for make a new star
 # the user can just make one star for each post
@@ -27,9 +31,9 @@ class StarCreateSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    user_image = serializers.SerializerMethodField()
-    user_name = serializers.SerializerMethodField()
-    profile_slug = serializers.SerializerMethodField()
+    user_image = serializers.SerializerMethodField(read_only=True)
+    user_name = serializers.SerializerMethodField(read_only=True)
+    profile_slug = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Comment
@@ -43,9 +47,7 @@ class CommentSerializer(serializers.ModelSerializer):
         return None
 
     def get_user_name(self, comment):
-        first_name = comment.user.first_name
-        last_name = comment.user.last_name
-        return str(first_name) + ' ' + str(last_name)
+        return comment.user.get_full_name
 
     def get_profile_slug(self, comment):
         if comment.user.profile:
@@ -75,10 +77,12 @@ class PostSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='post:post_review', lookup_field='slug')
     total_stars = serializers.SerializerMethodField()
     comments = CommentSerializer(many=True, read_only=True)
-    posted_by = serializers.SerializerMethodField()
-    user_image = serializers.SerializerMethodField()
-    profile_slug = serializers.SerializerMethodField()
-    total_comments = serializers.SerializerMethodField()
+    posted_by = serializers.SerializerMethodField(read_only=True)
+    user_image = serializers.SerializerMethodField(read_only=True)
+    profile_slug = serializers.SerializerMethodField(read_only=True)
+    total_comments = serializers.SerializerMethodField(read_only=True)
+    username = serializers.SerializerMethodField(read_only=True)
+    user_email = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Post
@@ -86,6 +90,12 @@ class PostSerializer(serializers.ModelSerializer):
 
     def get_total_stars(self, post):
         return post.get_post_stars_count
+
+    def get_username(self, post):
+        return post.user.username
+
+    def get_user_email(self, post):
+        return post.user.email
 
     def get_total_comments(self, post):
         return post.comments.count()
@@ -108,6 +118,13 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class PostCreateSerializer(serializers.ModelSerializer):
+    user_id = serializers.CharField(source='user')
     class Meta:
         model = Post
-        fields = ('title', 'description', 'file', 'user')
+        fields = ('title', 'description', 'file', 'user_id')
+
+    def create(self, validated_data):
+        user_id = validated_data.pop('user', 0)
+        user = UserAccount.objects.filter(pk=user_id).first()
+        validated_data['user'] = user
+        return super().create(validated_data)

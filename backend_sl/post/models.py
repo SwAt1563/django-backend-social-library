@@ -41,9 +41,7 @@ class Post(models.Model):
 
     @property
     def posted_by(self):
-        first_name = self.user.first_name
-        last_name = self.user.last_name
-        return first_name + ' ' + last_name
+        return self.user.get_full_name
 
 
 class Comment(models.Model):

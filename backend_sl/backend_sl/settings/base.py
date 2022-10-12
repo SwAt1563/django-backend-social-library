@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'post.apps.PostConfig',
     'friend.apps.FriendConfig',
     'notification.apps.NotificationConfig',
+    'admin_app.apps.AdminAppConfig',
 
 
     'django.contrib.admin',

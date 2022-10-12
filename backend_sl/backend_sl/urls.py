@@ -26,6 +26,7 @@ urlpatterns = [
     path('friend/', include('friend.urls', namespace='friend')),
     path('notification/', include('notification.urls', namespace='notification')),
     path('post/', include('post.urls', namespace='post')),
+    path('admin_app/', include('admin_app.urls', namespace='admin_app')),
 ]
 
 # for confirm the static paths

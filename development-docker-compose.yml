@@ -42,7 +42,7 @@ services:
     build:
       context: ./backend_sl
       dockerfile: development.Dockerfile
-    command: celery -A backend_sl worker -l info
+    command: celery -A backend_sl worker -B -E --scheduler django -l info # -B: for turn on the beat
     volumes:
       - celery:/app
     env_file:

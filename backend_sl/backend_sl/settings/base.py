@@ -6,6 +6,7 @@ Django settings for frontend_sl project.
 from pathlib import Path
 import os
 from datetime import timedelta
+from celery.schedules import crontab
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -33,6 +34,10 @@ INSTALLED_APPS = [
     'friend.apps.FriendConfig',
     'notification.apps.NotificationConfig',
     'admin_app.apps.AdminAppConfig',
+
+    #celery
+    'django_celery_beat',
+    'djcelery',
 
 
     'django.contrib.admin',
@@ -213,3 +218,5 @@ CORS_ALLOW_HEADERS = [
     "x-requested-with",
 
 ]
+
+CELERY_TIMEZONE = 'Asia/Jerusalem'

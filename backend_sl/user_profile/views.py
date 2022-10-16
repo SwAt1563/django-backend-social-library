@@ -2,7 +2,6 @@ from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView
 from .serializers import ProfileSerializer
 from .models import Profile
 from django.db.models import Q
-
 from rest_framework.settings import api_settings
 from .permissions import ProfileOwnerUpdateAllowRetrievePermission, CheckUserPermission
 

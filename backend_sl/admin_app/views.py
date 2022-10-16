@@ -10,17 +10,27 @@ from rest_framework import status
 from django.http import Http404
 from notification.models import Notification
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.settings import api_settings
+from rest_framework.permissions import BasePermission
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from .permissions import CheckUserPermission, AdminUserPermission
 
 # Create your views here.
 
 
+
+
+
+
 class PostListView(ListAPIView):
 
-    permission_classes = (AllowAny,)
+    permission_classes = (*api_settings.DEFAULT_PERMISSION_CLASSES, AdminUserPermission, CheckUserPermission)
     serializer_class = PostSerializer
 
     def get_queryset(self):
+
         queryset = Post.objects.all()
+
 
         name = self.request.query_params.get('filter')
         if name is not None:
@@ -36,21 +46,21 @@ class PostListView(ListAPIView):
 
 class RemovePostView(DestroyAPIView):
     queryset = Post.objects.all()
-    serializer_class = PostSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (*api_settings.DEFAULT_PERMISSION_CLASSES, AdminUserPermission, CheckUserPermission)
 
     def destroy(self, request, *args, **kwargs):
         try:
             user_id = request.data.get('user_id', 0)
             post_slug = request.data.get('post_slug', '')
-            user_id = UserAccount.objects.filter(pk=user_id).first()
+            admin = UserAccount.objects.filter(pk=user_id).first()
             post = Post.objects.filter(slug=post_slug).first()
             if post:
                 post_owner = post.user
                 post_title = post.title
-            if post and user_id and user_id.is_admin:
+            if post and admin:
                 self.perform_destroy(post)
-                sender = user_id
+                # send notification to the user
+                sender = admin
                 receiver = post_owner
                 content = f'{sender.get_full_name} removed your post: {post_title}'
                 Notification.objects.create(from_user=sender, to_user=receiver, content=content)
@@ -62,21 +72,23 @@ class RemovePostView(DestroyAPIView):
 
 
 @api_view(['POST'])
-@permission_classes([])
+@permission_classes((*api_settings.DEFAULT_PERMISSION_CLASSES, AdminUserPermission, CheckUserPermission))
 def accept_post(request):
     if request.method == 'POST':
         data = request.data
         user_id = data.get('user_id', 0)
         post_slug = data.get('post_slug', '')
-        user_id = UserAccount.objects.filter(pk=user_id).first()
+        admin = UserAccount.objects.filter(pk=user_id).first()
         post = Post.objects.filter(slug=post_slug).first()
         if post:
             post_owner = post.user
             post_title = post.title
-        if post and user_id and user_id.is_admin:
+        if post and admin:
+            # change status
             post.status = Post.Status.COMPLETED
             post.save()
-            sender = user_id
+            # send notification for the user
+            sender = admin
             receiver = post_owner
             content = f'{sender.get_full_name} accepted your post: {post_title}'
             Notification.objects.create(from_user=sender, to_user=receiver, content=content)

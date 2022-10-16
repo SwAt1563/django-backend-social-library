@@ -26,6 +26,10 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
         model = Profile
         fields = ('url', 'profile_slug', 'user', 'image', 'age', 'phone', 'address', 'status', 'about_me', 'user_stars',
                   'is_friend', 'relation_date', 'number_of_followers', 'number_of_following', 'number_of_posts', 'notifications')
+        extra_kwargs = {
+            'url': {'read_only': True},
+            'profile_slug': {'read_only': True},
+        }
 
     # we should send user_id as parameter to GET method to know if this user is friend to him or not
     def get_is_friend(self, profile):

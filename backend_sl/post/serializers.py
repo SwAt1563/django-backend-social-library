@@ -1,11 +1,13 @@
 from rest_framework import serializers
 from .models import Post, Comment, Star
 from account.models import UserAccount
+from rest_framework.validators import ValidationError
 
 class StarSerializer(serializers.ModelSerializer):
     class Meta:
         model = Star
         fields = '__all__'
+
 
 # you should send post_slug and user_id of the user who want to make star or that post for make a new star
 # the user can just make one star for each post
@@ -22,11 +24,14 @@ class StarCreateSerializer(serializers.ModelSerializer):
         fields = ('post_slug', 'user_id')
 
     def create(self, validated_data):
-        post_slug = validated_data.pop('post', '')
-        post = Post.objects.filter(slug=post_slug).first()
-        user_id = validated_data.pop('user', 0)
-        user = UserAccount.objects.filter(pk=user_id).first()
-        validated_data = {'user': user, 'post': post}
+        try:
+            post_slug = validated_data.pop('post', '')
+            post = Post.objects.get(slug=post_slug)
+            user_id = validated_data.pop('user', 0)
+            user = UserAccount.objects.get(pk=user_id)
+            validated_data = {'user': user, 'post': post}
+        except (Post.DoesNotExist, UserAccount.DoesNotExist):
+            raise ValidationError('object not exists')
         return super().create(validated_data)
 
 
@@ -55,6 +60,7 @@ class CommentSerializer(serializers.ModelSerializer):
             return profile_slug
         return None
 
+
 # you should send user_id of the user who commented and the comment and the post_slug
 class CommentCreateSerializer(serializers.ModelSerializer):
     post_slug = serializers.SlugField(source='post')
@@ -65,13 +71,17 @@ class CommentCreateSerializer(serializers.ModelSerializer):
         fields = ('user_id', 'post_slug', 'comment')
 
     def create(self, validated_data):
-        post_slug = validated_data.pop('post', '')
-        post = Post.objects.filter(slug=post_slug).first()
-        user_id = validated_data.pop('user', 0)
-        user = UserAccount.objects.filter(pk=user_id).first()
-        comment = validated_data.pop('comment', '')
-        validated_data = {'user': user, 'post': post, 'comment': comment}
+        try:
+            post_slug = validated_data.pop('post', '')
+            post = Post.objects.filter(slug=post_slug).first()
+            user_id = validated_data.pop('user', 0)
+            user = UserAccount.objects.filter(pk=user_id).first()
+            comment = validated_data.pop('comment', '')
+            validated_data = {'user': user, 'post': post, 'comment': comment}
+        except (Post.DoesNotExist, UserAccount.DoesNotExist):
+            raise ValidationError('object not exists')
         return super().create(validated_data)
+
 
 class PostSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='post:post_review', lookup_field='slug')
@@ -119,12 +129,16 @@ class PostSerializer(serializers.ModelSerializer):
 
 class PostCreateSerializer(serializers.ModelSerializer):
     user_id = serializers.CharField(source='user')
+
     class Meta:
         model = Post
         fields = ('title', 'description', 'file', 'user_id')
 
     def create(self, validated_data):
         user_id = validated_data.pop('user', 0)
-        user = UserAccount.objects.filter(pk=user_id).first()
-        validated_data['user'] = user
+        try:
+            user = UserAccount.objects.get(pk=user_id)
+            validated_data['user'] = user
+        except UserAccount.DoesNotExist:
+            raise ValidationError('The user not exists')
         return super().create(validated_data)

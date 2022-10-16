@@ -2,6 +2,7 @@ from rest_framework.permissions import BasePermission
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from account.models import UserAccount
 
+
 class AdminUserPermission(BasePermission):
     def has_permission(self, request, view):
         response = request.data

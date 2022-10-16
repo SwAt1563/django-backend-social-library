@@ -9,6 +9,7 @@ from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 from user_profile.models import Profile
 
+
 class UsernameTokenObtainSerializer(TokenObtainPairSerializer):
 
     def validate(self, attrs):
@@ -97,7 +98,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError(
-                {'password2':'password fields not match'}
+                {'password2': 'password fields not match'}
             )
         return attrs
 
@@ -113,7 +114,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
         # create related profile for this user
         Profile.objects.create(user=user)
         return user
-
 
 
 class UserSerializer(serializers.ModelSerializer):

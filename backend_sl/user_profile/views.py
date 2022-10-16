@@ -1,11 +1,7 @@
-from django.shortcuts import render
 from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView
 from .serializers import ProfileSerializer
 from .models import Profile
-from rest_framework.permissions import AllowAny
-from account.models import UserAccount
 from django.db.models import Q
-
 
 from rest_framework.settings import api_settings
 from .permissions import ProfileOwnerUpdateAllowRetrievePermission, CheckUserPermission
@@ -14,14 +10,11 @@ from .permissions import ProfileOwnerUpdateAllowRetrievePermission, CheckUserPer
 # Create your views here.
 
 
-
-
 class ProfileView(RetrieveUpdateAPIView):
     queryset = Profile.objects.all()
     permission_classes = (*api_settings.DEFAULT_PERMISSION_CLASSES, ProfileOwnerUpdateAllowRetrievePermission)
     serializer_class = ProfileSerializer
     lookup_field = 'slug'
-
 
     # to allow partial update (patch)
     def put(self, request, *args, **kwargs):
@@ -33,7 +26,8 @@ class TopUsersListView(ListAPIView):
     serializer_class = ProfileSerializer
 
     def get_queryset(self):
-        queryset = sorted(Profile.objects.all(), key=lambda profile: profile.user.get_total_user_stars, reverse=True)[:3]
+        queryset = sorted(Profile.objects.all(), key=lambda profile: profile.user.get_total_user_stars, reverse=True)[
+                   :3]
         return queryset
 
 

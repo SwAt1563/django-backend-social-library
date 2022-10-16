@@ -3,8 +3,7 @@ from .models import Profile
 from account.serializers import UserSerializer
 from account.models import UserAccount
 from friend.models import UserFollowing
-from notification.models import Notification
-from rest_framework.response import Response
+
 
 # you can update the user fields by send
 # user.first_name
@@ -21,11 +20,11 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
     number_of_posts = serializers.SerializerMethodField(read_only=True, default=0)
     notifications = serializers.SerializerMethodField(read_only=True, default=None)
 
-
     class Meta:
         model = Profile
         fields = ('url', 'profile_slug', 'user', 'image', 'age', 'phone', 'address', 'status', 'about_me', 'user_stars',
-                  'is_friend', 'relation_date', 'number_of_followers', 'number_of_following', 'number_of_posts', 'notifications')
+                  'is_friend', 'relation_date', 'number_of_followers', 'number_of_following', 'number_of_posts',
+                  'notifications')
         extra_kwargs = {
             'url': {'read_only': True},
             'profile_slug': {'read_only': True},
@@ -79,7 +78,6 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
                             'content': content,
                         }
 
-
                     return senders
         return None
 
@@ -97,7 +95,6 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
                     relation = None
         return None
 
-
     def get_number_of_followers(self, profile):
         return profile.user.get_total_followers
 
@@ -106,7 +103,6 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_number_of_posts(self, profile):
         return profile.user.get_total_posts
-
 
     # for nested serializer we need this for update the user data
     def update(self, instance, validated_data):
@@ -131,7 +127,3 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_profile_slug(self, profile):
         return profile.slug
-
-
-
-

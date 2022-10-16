@@ -2,6 +2,7 @@ from rest_framework.permissions import BasePermission
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import Post
 
+
 class CheckUserPermission(BasePermission):
     def has_permission(self, request, view):
         response = JWTAuthentication().authenticate(request)
@@ -35,6 +36,3 @@ class CheckPostOwnerPermission(BasePermission):
                     except Post.DoesNotExist:
                         return False
         return False
-
-
-

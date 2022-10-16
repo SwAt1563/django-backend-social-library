@@ -1,9 +1,6 @@
-from django.shortcuts import render
-from rest_framework.generics import (RetrieveUpdateDestroyAPIView, UpdateAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView)
-from rest_framework.generics import (ListAPIView, ListCreateAPIView)
-from .models import Post, Comment, Star
-from rest_framework.permissions import AllowAny
-from .serializers import PostSerializer, StarCreateSerializer, PostCreateSerializer, CommentCreateSerializer, StarSerializer
+from rest_framework.generics import (UpdateAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView)
+from rest_framework.generics import ListAPIView
+from .serializers import PostSerializer, StarCreateSerializer, PostCreateSerializer, CommentCreateSerializer
 from account.models import UserAccount
 from .models import Post, Star
 from django.db.models import Q
@@ -13,8 +10,8 @@ from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from .permissions import CheckUserPermission, CheckPostOwnerPermission
 
-# Create your views here.
 
+# Create your views here.
 
 
 class StarCreateView(CreateAPIView):
@@ -23,13 +20,9 @@ class StarCreateView(CreateAPIView):
     serializer_class = StarCreateSerializer
 
 
-
-
-
 class StarRemoveView(DestroyAPIView):
     queryset = Star.objects.all()
     permission_classes = (*api_settings.DEFAULT_PERMISSION_CLASSES, CheckUserPermission)
-
 
     def destroy(self, request, *args, **kwargs):
         try:
@@ -51,7 +44,6 @@ class CommentCreateView(CreateAPIView):
     queryset = Star.objects.all()
     permission_classes = (*api_settings.DEFAULT_PERMISSION_CLASSES, CheckUserPermission)
     serializer_class = CommentCreateSerializer
-
 
 
 # for create post you should send the data and the user_id
@@ -85,8 +77,7 @@ class PostReview(RetrieveAPIView):
 
 
 class PostListView(ListAPIView):
-
-    permission_classes = (*api_settings.DEFAULT_PERMISSION_CLASSES, )
+    permission_classes = (*api_settings.DEFAULT_PERMISSION_CLASSES,)
     serializer_class = PostSerializer
 
     def get_queryset(self):

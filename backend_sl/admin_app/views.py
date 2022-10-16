@@ -1,6 +1,5 @@
-from django.shortcuts import render
+
 from rest_framework.generics import ListAPIView, DestroyAPIView
-from rest_framework.permissions import AllowAny
 from post.serializers import PostSerializer
 from post.models import Post
 from django.db.models import Q
@@ -11,26 +10,18 @@ from django.http import Http404
 from notification.models import Notification
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.settings import api_settings
-from rest_framework.permissions import BasePermission
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from .permissions import CheckUserPermission, AdminUserPermission
+
 
 # Create your views here.
 
 
-
-
-
-
 class PostListView(ListAPIView):
-
     permission_classes = (*api_settings.DEFAULT_PERMISSION_CLASSES, AdminUserPermission, CheckUserPermission)
     serializer_class = PostSerializer
 
     def get_queryset(self):
-
         queryset = Post.objects.all()
-
 
         name = self.request.query_params.get('filter')
         if name is not None:
@@ -39,7 +30,6 @@ class PostListView(ListAPIView):
                                        | Q(file__contains=name) | Q(user__username__contains=name)
                                        | Q(user__first_name__contains=name) | Q(user__last_name__contains=name)
                                        | Q(user__email=name) | Q(status=name))
-
 
         return queryset
 

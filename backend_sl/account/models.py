@@ -3,12 +3,15 @@ from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db.models import Count
 from user_profile.models import Profile
+
+
 # Create your models here.
 
 def validate_email(email):
     import re
     if not re.match(r'^[0-9]{7}@student\.birzeit\.edu$', email):
         raise ValidationError('wrong email format')
+
 
 class UserAccount(AbstractUser):
     question = models.CharField(max_length=200, null=True, blank=True)
@@ -17,11 +20,9 @@ class UserAccount(AbstractUser):
     created = models.DateTimeField(auto_now_add=True)
     is_admin = models.BooleanField(default=False)
 
-
     @property
     def get_full_name(self):
         return f'{self.first_name} {self.last_name}'
-
 
     # this used by profile slug
     def __str__(self):
@@ -61,5 +62,3 @@ class UserAccount(AbstractUser):
         if hasattr(self, 'following'):
             return self.following.count()
         return 0
-
-

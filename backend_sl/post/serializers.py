@@ -3,11 +3,6 @@ from .models import Post, Comment, Star
 from account.models import UserAccount
 from rest_framework.validators import ValidationError
 
-class StarSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Star
-        fields = '__all__'
-
 
 # you should send post_slug and user_id of the user who want to make star or that post for make a new star
 # the user can just make one star for each post

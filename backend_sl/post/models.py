@@ -3,6 +3,8 @@ from autoslug import AutoSlugField
 from django.urls import reverse
 from django.conf import settings
 from django.core.validators import ValidationError
+
+
 # Create your models here.
 def validate_file_extension(value):
     import os
@@ -12,12 +14,12 @@ def validate_file_extension(value):
     if not ext.lower() in valid_extensions:
         raise ValidationError('Unsupported file extension.')
 
+
 class Post(models.Model):
     class Status(models.TextChoices):
         PENDING = "PENDING", "Pending"
         COMPLETED = "COMPLETED", "Completed"
         BLOCKED = "BLOCKED", "Blocked"
-
 
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=500)
@@ -54,8 +56,6 @@ class Comment(models.Model):
         return f'{self.user} comment on {self.post.title} with this comment: {self.comment}'
 
 
-
-
 class Star(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='stars')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='stars')
@@ -68,11 +68,10 @@ class Star(models.Model):
         if Star.objects.filter(post=self.post, user=self.user):
             raise ValidationError('this user make star on this post')
         return self
+
     def save(
-        self, force_insert=False, force_update=False, using=None, update_fields=None
+            self, force_insert=False, force_update=False, using=None, update_fields=None
     ):
         if Star.objects.filter(post=self.post, user=self.user):
             raise ValidationError('this user make star on this post')
         return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
-
-

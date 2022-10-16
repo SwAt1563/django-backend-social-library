@@ -1,9 +1,7 @@
-from django.shortcuts import render
 from rest_framework.generics import ListAPIView, CreateAPIView, DestroyAPIView
 from .models import UserFollowing
 from .serializers import FollowCreateSerializer
 from user_profile.serializers import ProfileSerializer
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.http import Http404
 from rest_framework import status

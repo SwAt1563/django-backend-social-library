@@ -1,25 +1,20 @@
-from django.shortcuts import render
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import EmailTokenObtainSerializer, RegistrationSerializer, UsernameTokenObtainSerializer
 from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import AllowAny
-from rest_framework.settings import api_settings
-from rest_framework.permissions import BasePermission
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from account.models import UserAccount
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
 from rest_framework.response import Response
 from .permissions import AdminUserPermission
 from rest_framework.authtoken.models import Token
-
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 
 
-
 class EmailTokenObtainPairView(TokenObtainPairView):
     serializer_class = EmailTokenObtainSerializer
+
 
 # just for admins
 class UsernameTokenObtainPairView(TokenObtainPairView):

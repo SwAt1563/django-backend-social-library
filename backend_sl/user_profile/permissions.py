@@ -27,6 +27,7 @@ class ProfileOwnerUpdateAllowRetrievePermission(BasePermission):
                     return check_profile_owner(user)
         return False
 
+
 # if the send user_id same as in token
 class CheckUserPermission(BasePermission):
     def has_permission(self, request, view):

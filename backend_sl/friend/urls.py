@@ -3,7 +3,6 @@ from friend import views
 
 app_name = 'friend'
 
-# don't forget the search for following and follower lists
 
 urlpatterns = [
     # you should send the user_id for user who want to make follow/unfollow request

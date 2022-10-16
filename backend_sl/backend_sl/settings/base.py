@@ -49,6 +49,8 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework.authtoken',  # for generate tokens
+
 
     "corsheaders",  # for access my api from different sites
 ]
@@ -220,3 +222,4 @@ CORS_ALLOW_HEADERS = [
 ]
 
 CELERY_TIMEZONE = 'Asia/Jerusalem'
+

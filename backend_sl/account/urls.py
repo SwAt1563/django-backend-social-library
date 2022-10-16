@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
-from .views import EmailTokenObtainPairView, RegisterUserAPIView, UsernameTokenObtainPairView
+from .views import EmailTokenObtainPairView, RegisterUserAPIView, UsernameTokenObtainPairView, check_email_and_answer, change_password
 
 app_name = 'account'
 
@@ -21,6 +21,13 @@ urlpatterns = [
 
         # POST METHOD: username, email, password, password2, question, answer
         path('register/', RegisterUserAPIView.as_view(), name='register'),
+
+        # POST METHOD: email, question, answer
+        # Result: reset_password_token
+        path('reset_password_token/', check_email_and_answer, name='reset_password_token'),
+
+        # POST METHOD: new_password (validation password), reset_password_token
+        path('change_password/', change_password, name='change_password'),
     ]
 
 

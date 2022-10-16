@@ -37,6 +37,7 @@ class UsernameTokenObtainSerializer(TokenObtainPairSerializer):
         data['username'] = str(self.user.username)
         data['email'] = str(self.user.email)
         data['user_id'] = self.user.id
+        data['is_admin'] = self.user.is_admin
         if hasattr(self.user, 'profile'):
             data['profile_slug'] = str(self.user.profile.slug)
 
@@ -69,6 +70,7 @@ class EmailTokenObtainSerializer(TokenObtainPairSerializer):
         data['username'] = str(self.user.username)
         data['email'] = str(self.user.email)
         data['user_id'] = self.user.id
+        data['is_admin'] = self.user.is_admin
         if hasattr(self.user, 'profile'):
             data['profile_slug'] = str(self.user.profile.slug)
 

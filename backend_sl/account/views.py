@@ -38,6 +38,7 @@ def check_email_and_answer(request):
         answer = data.get('answer', '')
         try:
             user = UserAccount.objects.get(email=email, question=question, answer=answer)
+
         except UserAccount.DoesNotExist:
             return Response({'error': 'Wrong inputs'}, status=status.HTTP_204_NO_CONTENT)
 
@@ -67,11 +68,14 @@ def change_password(request):
         except Token.DoesNotExist:
             return Response({'error': 'reset_password_token not exist'}, status=status.HTTP_400_BAD_REQUEST)
 
+
         user = token.user
+
         user.set_password(new_password)
         user.save()
 
         token.delete()
+       
 
         return Response(status=status.HTTP_200_OK)
     return Response(status=status.HTTP_400_BAD_REQUEST)

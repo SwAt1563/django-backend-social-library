@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 from user_profile.models import Profile
+from django import db
 
 
 class UsernameTokenObtainSerializer(TokenObtainPairSerializer):
@@ -103,21 +104,30 @@ class RegistrationSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        user = UserAccount.objects.create(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            question=validated_data['question'],
-            answer=validated_data['answer'],
-        )
+        user = UserAccount(username=validated_data['username'],
+                           email=validated_data['email'],
+                           question=validated_data['question'],
+                           answer=validated_data['answer'])
+
         user.set_password(validated_data['password'])
+
+        # this will save the password
+        # and create profile for this user
         user.save()
+
+        # we applied this in the UserAccount save method
         # create related profile for this user
-        Profile.objects.create(user=user)
+        # Profile.objects.create(user=user)
+
         return user
 
 
 class UserSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = UserAccount
-        fields = ('first_name', 'last_name', 'email')
+        fields = ('first_name', 'last_name', 'email', 'full_name')
         read_only_fields = ('email',)
+
+    def get_full_name(self, user):
+        return user.get_full_name

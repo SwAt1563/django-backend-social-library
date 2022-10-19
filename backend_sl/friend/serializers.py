@@ -3,6 +3,7 @@ from .models import UserFollowing
 from account.models import UserAccount
 from notification.models import Notification
 from rest_framework.validators import ValidationError
+from django.db import IntegrityError
 
 
 class FollowCreateSerializer(serializers.ModelSerializer):
@@ -26,7 +27,10 @@ class FollowCreateSerializer(serializers.ModelSerializer):
         except UserAccount.DoesNotExist:
             raise ValidationError('The user not exist')
 
-        return super().create(validated_data)
+        try:
+            return super().create(validated_data)
+        except IntegrityError:  # for handle the unique follow
+            raise ValidationError('this follow exists before')
 
 
 

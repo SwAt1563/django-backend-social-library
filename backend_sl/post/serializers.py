@@ -1,9 +1,8 @@
 from rest_framework import serializers
 from .models import Post, Comment, Star
 from account.models import UserAccount
+from django.db import IntegrityError
 from rest_framework.validators import ValidationError
-
-
 # you should send post_slug and user_id of the user who want to make star or that post for make a new star
 # the user can just make one star for each post
 class StarCreateSerializer(serializers.ModelSerializer):
@@ -27,7 +26,10 @@ class StarCreateSerializer(serializers.ModelSerializer):
             validated_data = {'user': user, 'post': post}
         except (Post.DoesNotExist, UserAccount.DoesNotExist):
             raise ValidationError('object not exists')
-        return super().create(validated_data)
+        try:
+            return super().create(validated_data)
+        except IntegrityError:  # for handle the unique stars
+            raise ValidationError('this star exists before')
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -75,7 +77,11 @@ class CommentCreateSerializer(serializers.ModelSerializer):
             validated_data = {'user': user, 'post': post, 'comment': comment}
         except (Post.DoesNotExist, UserAccount.DoesNotExist):
             raise ValidationError('object not exists')
-        return super().create(validated_data)
+
+        try:
+            return super().create(validated_data)
+        except IntegrityError:
+            raise ValidationError('Star exists')
 
 
 class PostSerializer(serializers.ModelSerializer):

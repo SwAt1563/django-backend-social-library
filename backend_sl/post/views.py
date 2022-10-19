@@ -35,9 +35,9 @@ class StarRemoveView(DestroyAPIView):
                 self.perform_destroy(instance)
             else:
                 raise Http404
-            return Response(status=status.HTTP_200_OK)
-        except Http404:
             return Response(status=status.HTTP_204_NO_CONTENT)
+        except Http404:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class CommentCreateView(CreateAPIView):

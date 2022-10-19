@@ -17,7 +17,7 @@ from .permissions import CheckUserPermission, AdminUserPermission
 
 
 class PostListView(ListAPIView):
-    permission_classes = (*api_settings.DEFAULT_PERMISSION_CLASSES, AdminUserPermission, CheckUserPermission)
+    permission_classes = (*api_settings.DEFAULT_PERMISSION_CLASSES, AdminUserPermission)
     serializer_class = PostSerializer
 
     def get_queryset(self):
@@ -56,9 +56,9 @@ class RemovePostView(DestroyAPIView):
                 Notification.objects.create(from_user=sender, to_user=receiver, content=content)
             else:
                 raise Http404
-            return Response(status=status.HTTP_200_OK)
-        except Http404:
             return Response(status=status.HTTP_204_NO_CONTENT)
+        except Http404:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['POST'])
@@ -74,13 +74,14 @@ def accept_post(request):
             post_owner = post.user
             post_title = post.title
         if post and admin:
-            # change status
-            post.status = Post.Status.COMPLETED
-            post.save()
-            # send notification for the user
-            sender = admin
-            receiver = post_owner
-            content = f'{sender.get_full_name} accepted your post: {post_title}'
-            Notification.objects.create(from_user=sender, to_user=receiver, content=content)
+            if post.status != Post.Status.COMPLETED:
+                # change status
+                post.status = Post.Status.COMPLETED
+                post.save()
+                # send notification for the user
+                sender = admin
+                receiver = post_owner
+                content = f'{sender.get_full_name} accepted your post: {post_title}'
+                Notification.objects.create(from_user=sender, to_user=receiver, content=content)
             return Response(status=status.HTTP_200_OK)
     return Response(status=status.HTTP_400_BAD_REQUEST)

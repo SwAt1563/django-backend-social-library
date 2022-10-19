@@ -1,5 +1,6 @@
 from rest_framework.permissions import BasePermission
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from account.models import UserAccount
 
 
 # if the send user_id same as in token
@@ -24,5 +25,5 @@ class AdminUserPermission(BasePermission):
         response = JWTAuthentication().authenticate(request)
         if response:
             user, token = response
-            return True if user.is_admin else False
+            return user.is_admin
         return False

@@ -60,18 +60,14 @@ class Star(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='stars')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='stars')
 
+
+    class Meta:
+        # for don't let user make more than one star on post
+        # it work like indexes in the database
+        constraints = (models.UniqueConstraint(fields=('post', 'user'), name='unique_star'),)
+
+
     def __str__(self):
         return f'user: {self.user} make star on post: {self.post.title}'
 
-    # for don't let user make more than one star on the same post
-    def clean(self):
-        if Star.objects.filter(post=self.post, user=self.user):
-            raise ValidationError('this user make star on this post')
-        return self
 
-    def save(
-            self, force_insert=False, force_update=False, using=None, update_fields=None
-    ):
-        if Star.objects.filter(post=self.post, user=self.user):
-            raise ValidationError('this user make star on this post')
-        return super().save(force_insert=False, force_update=False, using=None, update_fields=None)

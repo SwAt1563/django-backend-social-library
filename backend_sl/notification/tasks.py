@@ -19,7 +19,7 @@ def delete_expired_notification(*args, **kwargs):
 app.conf.beat_schedule = {
     'delete_expired_notification': {
         'task': 'notification.tasks.delete_expired_notification',
-        'schedule': crontab('*/30'),  # each minute check
+        'schedule': crontab('*/30'),  # each 30 minute check
         # 'args': (16, 16),  # we can pass the task parameters
         # 'kwargs': {},  # we can pass the task keys
     },

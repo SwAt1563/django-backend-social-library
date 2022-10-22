@@ -20,7 +20,9 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', False) in ('True', 1, 'true')
 
-ALLOWED_HOSTS = ['*']
+# open the website from localhost
+# make request on the backend-sl container
+ALLOWED_HOSTS = ['localhost', 'backend-sl']
 
 
 
@@ -59,9 +61,12 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
 
+    # corsheaders
+    # CorsMiddleware before any other middleware that can generate responses
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+
 
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -191,14 +196,19 @@ SIMPLE_JWT = {
     'JTI_CLAIM': 'jti',
 
     'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
-    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
+    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=15),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
 
 # https://github.com/adamchainz/django-cors-headers
+
+CORS_ALLOW_CREDENTIALS = True
+
 # who can use my api
-# CORS_ALLOWED_ORIGINS = []
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+
+]
+
 CORS_ALLOW_METHODS = [
     "DELETE",
     "GET",

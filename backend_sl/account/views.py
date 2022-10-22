@@ -10,7 +10,9 @@ from .permissions import AdminUserPermission
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
-
+import jwt
+from django.conf import settings
+from rest_framework_simplejwt.views import TokenRefreshView
 
 class EmailTokenObtainPairView(TokenObtainPairView):
     serializer_class = EmailTokenObtainSerializer
@@ -79,3 +81,30 @@ def change_password(request):
 
         return Response(status=status.HTTP_200_OK)
     return Response(status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes((AllowAny,))
+def check_token_expired(request):
+    if request.method == 'POST':
+        try:
+
+            activation_token = request.data['access']
+            payload = jwt.decode(activation_token, settings.SECRET_KEY, algorithms=['HS256'])
+
+            return Response({'access': activation_token}, status=status.HTTP_200_OK)
+        except jwt.ExpiredSignatureError as identifier:
+
+            # payload = jwt.decode(request.GET['activation_token'], settings.SECRET_KEY, algorithms=['HS256'],
+            #                      options={"verify_signature": False})
+
+
+            # we send the refresh token by request
+            response = TokenRefreshView.as_view()(request=request._request)
+
+            if response.status_code == 200:
+                return Response({'access': response.data['access']}, status=status.HTTP_200_OK)
+
+            return Response(status=status.HTTP_403_FORBIDDEN)
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+

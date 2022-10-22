@@ -1,15 +1,20 @@
 version: '3.5'
-
-
-
 networks:
   backend_net:
+    name: bridge_between_frontend_backend
     driver: bridge
-
-
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.96.0/20
+          gateway: 192.168.96.1
 services:
   backend_sl:
-    container_name: backend_sl
+    # The "_" is not allowed in the HOST name as per RFC 1034/1035
+    # and that was what was causing the Invalid HTTP_HOST header
+    # so replace it with '-'
+    # for use this container in the frontend
+    container_name: backend-sl
     build:
       context: ./backend_sl # but the source path that we will search about docker image from it
       dockerfile: development.Dockerfile
@@ -27,6 +32,15 @@ services:
     networks:
       - backend_net
 
+# this don't work with version 3.5 maybe work on version 2
+#    networks:
+#      backend_net:
+#        - ipv4_address: 192.168.96.2
+
+
+
+
+
   redis:
     container_name: redis-server-api
     image: redis:alpine
@@ -35,6 +49,8 @@ services:
       - '6380:6380'
     networks:
       - backend_net
+
+
 
   celery:
     container_name: celery-api
@@ -54,6 +70,8 @@ services:
       - backend_sl
     networks:
       - backend_net
+
+
 
 volumes:
   static_vol:

@@ -43,5 +43,27 @@ def test_refresh_token(client, user):
     assert 'access' in new_data
 
 
+@pytest.mark.django_db
+def test_check_token(client, user):
+    payload = dict(
+        email=user.email,
+        password='1',
+    )
+    response = client.post('/account/token_by_email/', payload)
+    data = response.data
+
+
+
+    payload = dict(
+        refresh=data['refresh'],
+        access=data['access']
+    )
+
+    new_access_token_response = client.post('/account/check_token/',  payload)
+    new_data = new_access_token_response.data
+
+    assert 'access' in new_data
+
+
 
 

@@ -9,8 +9,8 @@ from datetime import datetime, timedelta
 # the effect on the database will happen when celery and api containers share same database not sqlite3 different files
 @app.task
 def delete_expired_tokens(*args, **kwargs):
-    last_1_hour = timezone.now() - timedelta(hours=1)
-    tokens = Token.objects.filter(created__lte=last_1_hour)
+    last_30_minutes = timezone.now() - timedelta(minutes=30)
+    tokens = Token.objects.filter(created__lte=last_30_minutes)
     if tokens:
         tokens.delete()
     return

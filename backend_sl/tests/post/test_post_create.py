@@ -27,6 +27,7 @@ def test_create_post(auth_client, user):
     post = Post.objects.get(title=payload['title'])
 
     # 201: created success
+
     assert response.status_code == 201
     assert post.title == payload['title']
     assert post.description == payload['description']

@@ -28,9 +28,11 @@ services:
       - "6123:6123"
     volumes:
       - static_vol:/app/static # /app: workdir that we created in docker image and move our files in it
-      - media_vol:/app/static
+      - media_vol:/app/media
     networks:
       - backend_net
+    depends_on:
+      - redis
 
 # this don't work with version 3.5 maybe work on version 2
 #    networks:
@@ -38,18 +40,14 @@ services:
 #        - ipv4_address: 192.168.96.2
 
 
-
-
-
   redis:
     container_name: redis-server-api
     image: redis:alpine
     restart: always
     ports:
-      - '6380:6380'
+      - '6379:6379'
     networks:
       - backend_net
-
 
 
   celery:

@@ -8,7 +8,7 @@ from post.models import Post
 # @pytest.fixture(scope='session')
 # def django_db_setup():
 #     from django.conf import settings
-#     settings.DATABASES['default'] = {
+#     settings.DATABASES['test_db'] = {
 #         'ENGINE': 'django.db.backends.sqlite3',
 #         'NAME': 'db_name.sqlite3',
 #     }

@@ -20,6 +20,7 @@ class UserAccount(AbstractUser):
     created = models.DateTimeField(auto_now_add=True)
     is_admin = models.BooleanField(default=False)
 
+
     @property
     def get_full_name(self):
         return f'{self.first_name} {self.last_name}'

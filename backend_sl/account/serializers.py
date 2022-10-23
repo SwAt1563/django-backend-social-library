@@ -13,6 +13,16 @@ from django import db
 
 class UsernameTokenObtainSerializer(TokenObtainPairSerializer):
 
+    # this data will be included in the token after decode it
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['username'] = user.username
+
+        return token
+
     def validate(self, attrs):
         self.user = UserAccount.objects.filter(username=attrs[self.username_field]).first()
 
@@ -33,7 +43,7 @@ class UsernameTokenObtainSerializer(TokenObtainPairSerializer):
 
         refresh = self.get_token(self.user)
 
-        # we can return more data
+        # we can return more data on the first request
         data["refresh"] = str(refresh)
         data["access"] = str(refresh.access_token)
         data['username'] = str(self.user.username)
@@ -48,6 +58,16 @@ class UsernameTokenObtainSerializer(TokenObtainPairSerializer):
 
 class EmailTokenObtainSerializer(TokenObtainPairSerializer):
     username_field = get_user_model().EMAIL_FIELD
+
+    # this data will be included in the token after decode it
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['username'] = user.username
+
+        return token
 
     def validate(self, attrs):
         self.user = UserAccount.objects.filter(email=attrs[self.username_field]).first()

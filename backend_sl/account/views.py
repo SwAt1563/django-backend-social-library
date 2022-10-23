@@ -14,6 +14,7 @@ import jwt
 from django.conf import settings
 from rest_framework_simplejwt.views import TokenRefreshView
 
+
 class EmailTokenObtainPairView(TokenObtainPairView):
     serializer_class = EmailTokenObtainSerializer
 
@@ -70,17 +71,16 @@ def change_password(request):
         except Token.DoesNotExist:
             return Response({'error': 'reset_password_token not exist'}, status=status.HTTP_400_BAD_REQUEST)
 
-
         user = token.user
 
         user.set_password(new_password)
         user.save()
 
         token.delete()
-       
 
         return Response(status=status.HTTP_200_OK)
     return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['POST'])
 @permission_classes((AllowAny,))
@@ -97,7 +97,6 @@ def check_token_expired(request):
             # payload = jwt.decode(request.GET['activation_token'], settings.SECRET_KEY, algorithms=['HS256'],
             #                      options={"verify_signature": False})
 
-
             # we send the refresh token by request
             response = TokenRefreshView.as_view()(request=request._request)
 
@@ -106,5 +105,3 @@ def check_token_expired(request):
 
             return Response(status=status.HTTP_403_FORBIDDEN)
     return Response(status=status.HTTP_400_BAD_REQUEST)
-
-

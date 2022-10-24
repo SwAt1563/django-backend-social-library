@@ -135,6 +135,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
         # and create profile for this user
         user.save()
 
+
+
         # we applied this in the UserAccount save method
         # create related profile for this user
         # Profile.objects.create(user=user)

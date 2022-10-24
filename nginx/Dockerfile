@@ -1,2 +1,3 @@
-FROM nginx:1.19.0-apline
-COPY ./default.conf /etc/nginx/conf.d/default.conf
+FROM nginx:1.19.0-alpine
+RUN rm /etc/nginx/conf.d/default.conf
+ADD default.conf /etc/nginx/conf.d

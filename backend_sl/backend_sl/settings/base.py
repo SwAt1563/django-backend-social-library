@@ -36,8 +36,8 @@ INSTALLED_APPS = [
 
     #celery
     'django_celery_beat',
-
-
+    #SITE_ID = 1
+    'django.contrib.sites',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -53,6 +53,23 @@ INSTALLED_APPS = [
 
     "corsheaders",  # for access my api from different sites
 ]
+
+'''
+Django's Sites Framework is a contributed module bundled with
+ the core library that allows for the use of 
+ a single Django application/codebase with different sites
+  (that can use different databases, logic in views, etc). 
+  The SITE_ID setting, as stated in the docs, 
+  "is used so that application data can hook into specific sites 
+  and a single database can manage content for multiple sites."
+
+In this particular case AllAuth requires the Sites Framework 
+in order to function properly. 
+Many other third-party libraries are built to safely handle cases 
+where multiple sites may be present and as such may be best .
+'''
+SITE_ID = 1
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

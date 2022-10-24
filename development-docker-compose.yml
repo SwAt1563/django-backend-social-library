@@ -15,6 +15,7 @@ services:
     # so replace it with '-'
     # for use this container in the frontend
     container_name: backend-sl
+    command: python manage.py runserver 0.0.0.0:6123
     build:
       context: ./backend_sl # but the source path that we will search about docker image from it
       dockerfile: development.Dockerfile
@@ -27,6 +28,7 @@ services:
     ports:
       - "6123:6123"
     volumes:
+      - ./backend_sl/:/usr/src/backend_sl/
       - static_vol:/app/static # /app: workdir that we created in docker image and move our files in it
       - media_vol:/app/media
     networks:
@@ -48,24 +50,72 @@ services:
       - '6379:6379'
     networks:
       - backend_net
+    expose:
+      - 6379
 
 
-  celery:
-    container_name: celery-api
+  celery_worker:
+    container_name: backend_sl_celery_worker
     restart: always
     build:
       context: ./backend_sl
       dockerfile: development.Dockerfile
-    command: celery -A backend_sl worker -B -E --scheduler django -l info # -B: for turn on the beat
+    command: celery -A backend_sl worker --loglevel=info --logfile=logs/celery.log
     volumes:
-      - celery:/app
+      - ./backend_sl/:/usr/src/backend_sl/
     env_file:
       - .env
     environment:
       - DJANGO_SETTINGS_MODULE=backend_sl.settings.development
+      - DEBUG=True
     depends_on:
       - redis
       - backend_sl
+    networks:
+      - backend_net
+
+  celery_beat:
+    container_name: backend_sl_celery_beat
+    restart: always
+    build:
+      context: ./backend_sl
+      dockerfile: development.Dockerfile
+    command: celery -A backend_sl beat -l info
+    volumes:
+      - ./backend_sl/:/usr/src/backend_sl/
+    env_file:
+      - .env
+    environment:
+      - DJANGO_SETTINGS_MODULE=backend_sl.settings.development
+      - DEBUG=True
+    depends_on:
+      - redis
+      - backend_sl
+    networks:
+      - backend_net
+
+  flower:
+    container_name: backend_sl_flower
+    restart: always
+    build:
+      context: ./backend_sl
+      dockerfile: development.Dockerfile
+    command: "celery -A backend_sl flower
+                --broker=redis://redis:6379//
+                --env-file=.env
+                --basic_auth=${FLOWER_USER}:${FLOWER_PASSWORD}"
+    ports:
+      - '5555:5555'
+    env_file:
+      - .env
+    environment:
+      - DJANGO_SETTINGS_MODULE=backend_sl.settings.development
+      - DEBUG=True
+    depends_on:
+      - backend_sl
+      - redis
+      - celery_worker
+      - celery_beat
     networks:
       - backend_net
 
@@ -74,4 +124,3 @@ services:
 volumes:
   static_vol:
   media_vol:
-  celery:

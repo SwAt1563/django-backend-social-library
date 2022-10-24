@@ -7,7 +7,9 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', os.environ.get('DJANGO_SETTINGS_
 app = Celery('backend_sl')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
+app.conf.timezone = 'Asia/Jerusalem'
 
+app.conf.beat_schedule = {}
 
 '''
 For asynchronous tasks 

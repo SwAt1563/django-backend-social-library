@@ -13,7 +13,8 @@ from django.core.exceptions import ValidationError
 import jwt
 from django.conf import settings
 from rest_framework_simplejwt.views import TokenRefreshView
-
+from .tasks import create_email
+from .models import UserAccount
 
 class EmailTokenObtainPairView(TokenObtainPairView):
     serializer_class = EmailTokenObtainSerializer
@@ -28,6 +29,20 @@ class UsernameTokenObtainPairView(TokenObtainPairView):
 class RegisterUserAPIView(CreateAPIView):
     permission_classes = (AllowAny,)
     serializer_class = RegistrationSerializer
+
+    def post(self, request, *args, **kwargs):
+        response = super(RegisterUserAPIView, self).post(request, *args, **kwargs)
+        if response.status_code == 201:
+            data = response.data
+            create_email.delay(
+                user_username=data['username'],  # user username - this must be added
+                email_account="do not reply",  # the email account being used
+                subject='Thanks for signing up',
+                email=data['email'],  # who to email
+                cc=[],
+                template="account/hello.html",  # template to be used
+            )
+        return response
 
 
 # will generate token that will delete after 1h

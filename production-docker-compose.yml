@@ -1,0 +1,153 @@
+version: '3.5'
+
+networks:
+  backend_net:
+    driver: bridge
+
+services:
+
+  db:
+    container_name: backend_sl_db
+    image: postgres:15.0-alpine
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+
+    restart: always
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    networks:
+      - backend_net
+
+  app:
+    # The "_" is not allowed in the HOST name as per RFC 1034/1035
+    # and that was what was causing the Invalid HTTP_HOST header
+    # so replace it with '-'
+    # for use this container in the frontend
+    container_name: backend-sl
+    command: gunicorn backend_sl.wsgi:application --bind 0.0.0.0:8000
+    build:
+      context: ./backend_sl # but the source path that we will search about docker image from it
+      dockerfile: production.Dockerfile
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - DJANGO_SETTINGS_MODULE=backend_sl.settings.production
+    ports:
+      - "8000:8000"
+    volumes:
+      - static_vol:/home/app/web/staticfiles # /app: workdir that we created in docker image and move our files in it
+      - media_vol:/home/app/web/mediafiles
+    networks:
+      - backend_net
+    depends_on:
+      - db
+      - redis
+    expose:
+      - 8000
+
+
+
+  redis:
+    container_name: backend_sl_redis
+    image: redis:alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    networks:
+      - backend_net
+    expose:
+      - 6379
+
+
+  celery_worker:
+    container_name: backend_sl_celery_worker
+    restart: always
+    build:
+      context: ./backend_sl
+      dockerfile: production.Dockerfile
+    command: celery -A backend_sl worker --loglevel=info --logfile=logs/celery.log
+    volumes:
+      - ./backend_sl/:/home/app/web/
+    env_file:
+      - .env
+    environment:
+      - DJANGO_SETTINGS_MODULE=backend_sl.settings.production
+    depends_on:
+      - redis
+      - app
+      - db
+    networks:
+      - backend_net
+
+  celery_beat:
+    container_name: backend_sl_celery_beat
+    restart: always
+    build:
+      context: ./backend_sl
+      dockerfile: production.Dockerfile
+    command: celery -A backend_sl beat -l info
+    volumes:
+      - ./backend_sl/:/home/app/web/
+    env_file:
+      - .env
+    environment:
+      - DJANGO_SETTINGS_MODULE=backend_sl.settings.production
+    depends_on:
+      - redis
+      - app
+      - db
+    networks:
+      - backend_net
+
+  flower:
+    container_name: backend_sl_flower
+    restart: always
+    build:
+      context: ./backend_sl
+      dockerfile: production.Dockerfile
+    command: "celery -A backend_sl flower
+                --broker=redis://redis:6379//
+                --env-file=.env
+                --basic_auth=${FLOWER_USER}:${FLOWER_PASSWORD}"
+    ports:
+      - '5555:5555'
+    env_file:
+      - .env
+    environment:
+      - DJANGO_SETTINGS_MODULE=backend_sl.settings.production
+    depends_on:
+      - app
+      - redis
+      - db
+      - celery_worker
+      - celery_beat
+    networks:
+      - backend_net
+
+  nginx:
+    container_name: backend_sl_nginx
+    restart: always
+    build: ./nginx
+    ports:
+      - "8080:8080"
+    networks:
+      - backend_net
+    volumes:
+      - static_vol:/home/app/web/staticfiles
+      - media_vol:/home/app/web/mediafiles
+    depends_on:
+      - app
+
+
+
+volumes:
+  static_vol:
+  media_vol:
+  postgres_data:

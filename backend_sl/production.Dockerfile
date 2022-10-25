@@ -12,9 +12,9 @@ WORKDIR /usr/src/app
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
 
-RUN apt-get update && apt-get -y install netcat
+RUN apt-get update && apt-get -y install netcat-openbsd netcat-traditional
 
-RUN apt-get -y install add postgresql-dev gcc python3-dev musl-dev nginx libpq-dev postgresql-client
+RUN apt-get -y install postgresql gcc python3-dev musl-dev nginx libpq-dev postgresql-client
 
 COPY . /usr/src/app/
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r /usr/src/app/requirements.txt
@@ -41,8 +41,8 @@ ENV DJANGO_SETTINGS_MODULE=backend_sl.settings.production
 ENV HOME=/home/app
 ENV APP_HOME=/home/app/web
 RUN mkdir $APP_HOME
-RUN mkdir $APP_HOME/static
-RUN mkdir $APP_HOME/media
+RUN mkdir $APP_HOME/staticfiles
+RUN mkdir $APP_HOME/mediafiles
 WORKDIR $APP_HOME
 
 # install dependencies

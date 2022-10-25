@@ -17,6 +17,7 @@ DATABASES = {
     }
 }
 
+
 STATIC_URL = 'static/'
 MEDIA_URL = 'media/'
 
@@ -55,8 +56,7 @@ DONOT_REPLY_EMAIL_PASSWORD = os.environ.get("DONOT_REPLY_EMAIL_PASSWORD")
 FRONTEND_SITE = 'http://localhost:8000'
 
 # https://github.com/adamchainz/django-cors-headers
-
-# who can use my api
+# CROS
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 

@@ -36,6 +36,7 @@ services:
     depends_on:
       - redis
 
+
 # this don't work with version 3.5 maybe work on version 2
 #    networks:
 #      backend_net:

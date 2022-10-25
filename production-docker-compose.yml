@@ -25,14 +25,10 @@ services:
       - backend_net
 
   app:
-    # The "_" is not allowed in the HOST name as per RFC 1034/1035
-    # and that was what was causing the Invalid HTTP_HOST header
-    # so replace it with '-'
-    # for use this container in the frontend
     container_name: backend-sl
     command: gunicorn backend_sl.wsgi:application --bind 0.0.0.0:8000
     build:
-      context: ./backend_sl # but the source path that we will search about docker image from it
+      context: ./backend_sl #
       dockerfile: production.Dockerfile
     restart: always
     env_file:
@@ -42,7 +38,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - static_vol:/home/app/web/staticfiles # /app: workdir that we created in docker image and move our files in it
+      - ./backend_sl/:/home/app/web/
+      - static_vol:/home/app/web/staticfiles
       - media_vol:/home/app/web/mediafiles
     networks:
       - backend_net
@@ -136,7 +133,7 @@ services:
     restart: always
     build: ./nginx
     ports:
-      - "8080:8080"
+      - "80:80"
     networks:
       - backend_net
     volumes:

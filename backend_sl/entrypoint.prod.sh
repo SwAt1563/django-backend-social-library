@@ -11,4 +11,12 @@ then
     echo "PostgreSQL started"
 fi
 
+
+# we write it manually on the virtual machine
+#python manage.py flush --no-input
+#python manage.py makemigrations
+#python manage.py migrate
+#python manage.py collectstatic --noinput
+#python manage.py createadmin --username --email --password
+
 exec "$@"

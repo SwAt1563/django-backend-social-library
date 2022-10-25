@@ -21,7 +21,7 @@ DATABASES = {
 }
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, '../staticfiles'),
 ]
 
 STATIC_URL = '/static/'
@@ -61,8 +61,13 @@ DISPLAY_NAME = "Social Library"  # who send the message -name-
 DONOT_REPLY_EMAIL_PASSWORD = os.environ.get("DONOT_REPLY_EMAIL_PASSWORD")
 FRONTEND_SITE = 'http://localhost:8000'
 
+
+#CROS
 CORS_ALLOW_CREDENTIALS = False
 
+CORS_ALLOWED_ORIGINS = [
+
+]
 
 CORS_ALLOW_METHODS = [
     "DELETE",

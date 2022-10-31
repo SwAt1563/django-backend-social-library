@@ -127,6 +127,8 @@ services:
       - celery_beat
     networks:
       - backend_net
+    expose:
+      - 5000
 
   nginx:
     container_name: backend_sl_nginx

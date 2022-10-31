@@ -120,3 +120,12 @@ def check_token_expired(request):
 
             return Response(status=status.HTTP_403_FORBIDDEN)
     return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+# home view
+@api_view(['GET'])
+@permission_classes((AllowAny,))
+def home(request):
+    if request.method == 'GET':
+        return Response('What r u doing here', status=status.HTTP_200_OK)
+    return Response(status=status.HTTP_400_BAD_REQUEST)

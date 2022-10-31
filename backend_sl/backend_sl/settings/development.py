@@ -53,7 +53,12 @@ EMAIL_HOST_USER = os.environ.get("DONOT_REPLY_EMAIL")
 DISPLAY_NAME = "Social Library"  # who send the message -name-
 # GOOGLE APP PASSWORD
 DONOT_REPLY_EMAIL_PASSWORD = os.environ.get("DONOT_REPLY_EMAIL_PASSWORD")
+
+
 FRONTEND_SITE = 'http://localhost:8000'
+
+
+
 
 # https://github.com/adamchainz/django-cors-headers
 # CROS

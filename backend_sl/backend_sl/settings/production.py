@@ -1,7 +1,7 @@
 from .base import *
 
 
-ALLOWED_HOSTS = ['localhost', 'backend-sl'] + list(os.environ.get("DJANGO_ALLOWED_HOSTS").split(" "))
+ALLOWED_HOSTS = ['localhost', 'backend-sl', 'flower'] + list(os.environ.get("DJANGO_ALLOWED_HOSTS").split(" "))
 
 
 
@@ -20,9 +20,7 @@ DATABASES = {
     }
 }
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, '../staticfiles'),
-]
+
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
@@ -59,14 +57,25 @@ EMAIL_HOST_USER = os.environ.get("DONOT_REPLY_EMAIL")
 DISPLAY_NAME = "Social Library"  # who send the message -name-
 # GOOGLE APP PASSWORD
 DONOT_REPLY_EMAIL_PASSWORD = os.environ.get("DONOT_REPLY_EMAIL_PASSWORD")
-FRONTEND_SITE = 'http://localhost:8000'
 
+
+FRONTEND_SITE = 'https://social-library-1563.ml'
+
+#CSRF
+# to support https domains
+CSRF_TRUSTED_ORIGINS = ['https://*.social-library-api-1563.tk']
 
 #CROS
 CORS_ALLOW_CREDENTIALS = False
 
 CORS_ALLOWED_ORIGINS = [
-
+    'https://social-library-1563.ml',
+    'https://www.social-library-1563.ml',
+    'localhost',
+    '127.0.0.1',
+    'https://social-library-api-1563.tk',
+    'https://www.social-library-api-1563.tk',
+    'https://flower.social-library-api-1563.tk',
 ]
 
 CORS_ALLOW_METHODS = [

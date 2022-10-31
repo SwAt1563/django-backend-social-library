@@ -6,9 +6,11 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from account.views import home
 
 # when use the api be careful with the last slash '/' u should put it
 urlpatterns = [
+    path('', home, name='home'),  # just for return 200 response_status
     path('admin/', admin.site.urls),
     path('account/', include('account.urls', namespace='account')),
     path('profile/', include('user_profile.urls', namespace='user_profile')),

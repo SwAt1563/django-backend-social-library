@@ -63,7 +63,7 @@ FRONTEND_SITE = 'https://social-library-1563.ml'
 
 #CSRF
 # to support https domains
-CSRF_TRUSTED_ORIGINS = ['https://*.social-library-api-1563.tk']
+CSRF_TRUSTED_ORIGINS = ['https://*.social-library-api-1563.ml']
 
 #CROS
 CORS_ALLOW_CREDENTIALS = False
@@ -73,9 +73,9 @@ CORS_ALLOWED_ORIGINS = [
     'https://www.social-library-1563.ml',
     'localhost',
     '127.0.0.1',
-    'https://social-library-api-1563.tk',
-    'https://www.social-library-api-1563.tk',
-    'https://flower.social-library-api-1563.tk',
+    'https://social-library-api-1563.ml',
+    'https://www.social-library-api-1563.ml',
+    'https://flower.social-library-api-1563.ml',
 ]
 
 CORS_ALLOW_METHODS = [

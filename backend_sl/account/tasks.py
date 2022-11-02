@@ -92,6 +92,6 @@ def debug_task(*args, **kwargs):
 app.conf.beat_schedule.update({
     'debug_task': {
         'task': 'account.tasks.debug_task',
-        'schedule': timedelta(minutes=5),  # each 5 minutes check
+        'schedule': timedelta(days=3),  # each 3 days check
     },
 })

@@ -25,18 +25,18 @@
 - RDS on AWS
 - Google App for send emails
 
-##Prerequisites
+## Prerequisites
 - Install Docker
 - Install Docker-Compose
 - Install Git
 
-##Usage
+## Usage
 - Clone the repository `git clone https://github.com/SwAt1563/django-backend-social-library.git`
 - Open the project `cd django-backend-social-library`
 - Run for development `docker-compose -f development-docker-compose.yml up --build -d`
 - Run for production `docker-compose -f production-docker-compose.yml up --build -d`
 
-##The User Requirements
+## The User Requirements
 - Each user has profile
 - The user should register by the Birzeit University Email `*******@student.birzeit.edu`
 - The password for user should be strong
@@ -54,7 +54,7 @@
 - Search for users
 - Search for posts
 
-##The System Requirements
+## The System Requirements
 - `Simple-JWT` for authenticate and authorization 
 - `CORS ALLOWED ORIGINS` just for the `[https://social-library-1563.ml/]` [frontend application](https://github.com/SwAt1563/django-frontend-social-library)  
 - `Pytest` for testing the API requests
@@ -81,9 +81,9 @@
   - Use `S3` for make subdomain `flower.social-library-api-1563.ml` that redirect to flower page that created by the container 
   - Use `RDS` for make `Postgres` database to use it on our project
 
-##License
+## License
 There is `no license`, you can make anything on this free repository
 
-##Instructor
+## Instructor
 I'm Qutaiba Olayyan, Computer Engineering Student, trying to improve my knowledge with Django 
 by creating multiple projects like this one.
